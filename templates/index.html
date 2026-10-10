@@ -1,0 +1,72 @@
+<!DOCTYPE html><html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VietSub AI</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 24px;
+      background: #080d18;
+      color: #e8f7ff;
+      font-family: Arial, sans-serif;
+    }
+    main {
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 24px;
+      background: #111b2d;
+      border: 1px solid #00d9ff;
+      border-radius: 16px;
+      box-shadow: 0 0 20px #00d9ff30;
+    }
+    h1 { color: #00e5ff; }
+    input, button {
+      width: 100%;
+      box-sizing: border-box;
+      margin-top: 16px;
+      padding: 13px;
+      border-radius: 8px;
+    }
+    button {
+      background: #00d9ff;
+      border: 0;
+      font-weight: bold;
+    }
+    #status { color: #a8d9e8; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>VietSub AI</h1>
+    <p>Công cụ hỗ trợ dịch video và phụ đề.</p>
+    <form id="uploadForm">
+      <input type="file" id="video" accept="video/*" required>
+      <button type="submit">Tải video lên</button>
+    </form>
+    <p id="status">Sẵn sàng nhận video.</p>
+  </main>
+  <script>
+    document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const file = document.getElementById('video').files[0];
+      if (!file) return;
+      const data = new FormData();
+      data.append('video', file);
+      const status = document.getElementById('status');
+      status.textContent = 'Đang tải video lên...';
+      try {
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          body: data
+        });
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.error || 'Upload thất bại');
+        status.textContent = 'Đã tải lên. Mã tác vụ: ' + result.id + '. Chưa tích hợp engine dịch video.';
+      } catch (err) {
+        status.textContent = 'Lỗi: ' + err.message;
+      }
+    });
+  </script>
+</body>
+  </html>
